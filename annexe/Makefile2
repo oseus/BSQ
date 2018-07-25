@@ -1,0 +1,67 @@
+# **************************************************************************** #
+#                                                           LE - /             #
+#                                                               /              #
+#    Makefile                                         .::    .:/ .      .::    #
+#                                                  +:+:+   +:    +:  +:+:+     #
+#    By: shorwood <shorwood@student.le-101.fr>      +:+   +:    +:    +:+      #
+#                                                  #+#   #+    #+    #+#       #
+#    Created: 2018/07/16 12:26:44 by shorwood     #+#   ##    ##    #+#        #
+#    Updated: 2018/07/22 21:13:59 by shorwood    ###    #+. /#+    ###.fr      #
+#                                                          /                   #
+#                                                         /                    #
+# **************************************************************************** #
+
+#--- Initialize compilation/linkeage parameters.
+NAME	= colle-2
+DSRC	= .
+DINC	= .
+CC		= gcc
+CFLAGS	= -Wall -Werror -Wextra
+
+#--- Set source project dependencies.
+SRC		= $(wildcard $(DSRC)/*.c)
+#SRC	= $(DSRC)/main.c
+
+# **************************************************************************** #
+	
+
+#--- Default instruction to make the library.
+all: $(NAME)
+
+#--- Default instruction to make the library.
+build: all clean
+
+# **************************************************************************** #
+
+#--- Pull C files from the defined pool.
+%.c: $(SRC)
+
+#--- Translate into object binary. Depends on assembler code.
+%.s: %.c
+	@$(CC) $(CFLAGS) -I$(DINC) $< -o $@ -S
+	@echo "- Compilling $< into assembler."
+
+#--- Translate into object binary. Depends on assembler code.
+%.o: %.s
+	@$(CC) $(CFLAGS) -I$(DINC) $< -o $@ -c
+	@echo "- Translating $< to object."
+
+#--- Assemble static library. Depends on compiled object binary.
+$(NAME): $(SRC:%.c=%.s)
+	@$(CC) $(CFLAGS) -I$(DINC) $^ -o $@
+	@echo "- Compilation finished. '$@' ready to use."
+
+# **************************************************************************** #
+
+clean:
+	@rm -f $(DSRC)/*.o
+	@rm -f $(DSRC)/*.s
+	@echo "- Deleted compilation leftovers."
+	
+fclean: clean
+	@rm -f $(NAME)
+	@echo "- Deleted binary(ies)."
+
+re: fclean all
+
+.PHONY: all clean fclean re
